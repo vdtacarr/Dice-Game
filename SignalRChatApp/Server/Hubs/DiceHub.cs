@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace BlazorWebAssemblySignalRApp.Server.Hubs
 {
-    
 
     public class DiceHub : Hub
     {
         static ConcurrentDictionary<string, string> clientList = new ConcurrentDictionary<string, string>();
-        static List<string> _messages = new List<string>();
+        static List<Message> _messages = new List<Message>();
         public override async Task OnConnectedAsync()
         {;
             await Clients.Caller.SendAsync("GetConnectionId", this.Context.ConnectionId);
             await Groups.AddToGroupAsync(this.Context.ConnectionId, "A");
+            await Clients.All.SendAsync("Broadcast", _messages);
 
         }
         public async Task<bool> AddList(string userName, string connectionId)
@@ -30,10 +30,11 @@ namespace BlazorWebAssemblySignalRApp.Server.Hubs
             return result;
         }
 
-        public async Task Broadcast(string username, string message)
+        public async Task Broadcast(string username, string message, string connectionId)
         {
-
-            await Clients.All.SendAsync("Broadcast", username, message);
+            bool isMine = clientList.FirstOrDefault(x => x.Value == connectionId).Key == username;
+            _messages.Add(new Message (username,message,isMine));
+            await Clients.All.SendAsync("Broadcast", _messages);
         }
 
         public async Task GetPlayers(string userName)

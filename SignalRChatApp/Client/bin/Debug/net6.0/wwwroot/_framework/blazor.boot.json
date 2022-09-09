@@ -204,13 +204,13 @@
       "mscorlib.dll": "sha256-tSv6NEbBsHuM5P3AUJGybafS0hxrXlzDmmcyG2eGk3I=",
       "netstandard.dll": "sha256-klcvWVyHimPfDxg6W1A076EKpCB5ySxjtc7sxJEsGgE=",
       "System.Private.CoreLib.dll": "sha256-Y8kdbfPQ0YoYLGbOgzRmoVsnuMYNlA1hvLvDWFTtzrk=",
-      "SignalRChatApp.Client.dll": "sha256-0IR3JqJgadDyk56gLR4Qh9X9L1bzygLnzOQveJH5ZIk="
+      "SignalRChatApp.Client.dll": "sha256-tRi6ON\/X6wUGCblzMdHG9R4R1SDvJzoQFmTEg\/Fc3tE="
     },
     "extensions": null,
     "lazyAssembly": null,
     "libraryInitializers": null,
     "pdb": {
-      "SignalRChatApp.Client.pdb": "sha256-N1zAvN31aWR92o0eVya+OSZ9JIikVqhDC3cLNbRD8DU="
+      "SignalRChatApp.Client.pdb": "sha256-1l+xJZR8TCP8ARPg2eaaf+BrFJmqoG2l5ytHnPCmr44="
     },
     "runtime": {
       "dotnet.6.0.3.w51wvdzamm.js": "sha256-pRmcHKZN4T\/YbX9dj6ITT4sNtkJ9w07OLcwl4645nPg=",

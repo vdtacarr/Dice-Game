@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\SignalRChatApp",
+    "\\SignalRChatApp\\Client",
+    "\\SignalRChatApp\\Client\\Pages"
+  ],
+  "SelectedNode": "\\SignalRChatApp\\Client\\Pages\\DiceGame.razor",
+  "PreviewInSolutionExplorer": false
+}
