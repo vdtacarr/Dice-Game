@@ -1,0 +1,341 @@
+﻿@page "/dicegame"
+
+<style>
+
+textarea {
+    border: 1px dashed #888;
+    border-radius: 5px;
+    width: 80%;
+    overflow: auto;
+    background: #f7f7f7
+}
+
+/* improved for speech bubbles */
+.received, .sent {
+    position: relative;
+    font-family: arial;
+    font-size: 1.1em;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.received:after, .sent:after {
+    content: '';
+    border: 20px solid transparent;
+    position: absolute;
+    margin-top: -30px;
+}
+
+.sent {
+    background: #03a9f4;
+    color: #fff;
+    margin-left: 10%;
+    top: 50%;
+    text-align: right;
+}
+
+.received {
+    background: #4CAF50;
+    color: #fff;
+    margin-left: 10px;
+    margin-right: 10%;
+}
+
+.sent:after {
+    border-left-color: #03a9f4;
+    border-right: 0;
+    right: -20px;
+}
+
+.received:after {
+    border-right-color: #4CAF50;
+    border-left: 0;
+    left: -20px;
+}
+
+/* div within bubble for name */
+.user {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #000;
+}
+
+.msg {
+    /*display: inline;*/
+}
+</style>
+
+    <h1>Welcome To Dice Game</h1>
+    @if (!isConnect)
+    {
+        <div class="form-group row">
+            <label class="control-label" for="userName">User Name</label>
+            <div class="col-sm-10">
+                <input type="text" id="userName" @bind-value="userName" />
+                <input type="button" id="addList" value="Connect" class="btn btn-primary" @onclick="AddList" />
+            </div>
+        </div>
+    }
+    else
+    {
+
+        <div class="form-group row">
+            <label class="control-label" for="playDice"><h3><font color="red">@userName</font></h3></label>
+            <div class="col-sm-10">
+                @if (!isplayAgain)
+                {
+                    <input type="button" id="playDice" value="Play Dice" class="btn btn-primary" @onclick="PlayDice" />
+
+                }
+                else
+                {
+                    <input type="button" id="playDice" value="Play Again" class="btn btn-primary" @onclick="PlayAgain" />
+                }
+                @if (diceOne != 0)
+                {
+                    <img src="/Images/@(diceOne).png" asp-append-version="true" width="50px" />
+                    <img src="/Images/@(diceTwo).png" asp-append-version="true" width="50px" />
+                    <label class="control-label"><h3>Score : @(diceOne+diceTwo)</h3></label>
+                }
+            </div>
+        </div>
+    }
+    @if (isConnectPlayer2)
+    {
+
+        <div class="form-group row">
+            <label class="control-label"><h3><font color="red">@userName2</font></h3></label>
+            <div class="col-sm-10">
+                @if (diceThree != 0)
+                {
+                    <img src="/Images/@(diceThree).png" asp-append-version="true" width="50px" />
+                    <img src="/Images/@(diceFour).png" asp-append-version="true" width="50px" />
+                    <label class="control-label"><h3>Score : @(diceThree+diceFour)</h3></label>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="alert alert-secondary mt-4" role="alert">
+        <span class="oi oi-person mr-2" aria-hidden="true"></span>
+        <span>You are connected as <b>@userName</b></span>
+        <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Disconnect</button>
+    </div>
+    <div id="scrollbox">
+        @foreach (var item in _messages)
+        {
+            @if (item.IsNotice)
+            {
+                <div class="alert alert-info">@item.Body</div>
+            }
+            else
+            {
+                <div class="@item.CSS">
+                    <div class="user">@item.Username</div>
+                    <div class="msg">@item.Body</div>
+                </div>
+            }
+        }
+        <hr />
+        <textarea  placeholder="enter your comment"  @bind="_newMessage" @bind:event="oninput"></textarea>
+        <button class="btn btn-default" @onclick="@(() => SendAsync(_newMessage))">Send</button>
+    </div>
+
+@code {
+    [Inject] private NavigationManager NavigationManager { get; set; }
+
+    [Inject] private IJSRuntime jsRuntime { get; set; }
+
+    string connectionID;
+    string userName { get; set; }
+    HubConnection connection;
+    bool isConnect = false;
+
+    bool isplayAgain = false;
+
+    string userName2;
+    string connectionID2;
+    bool isConnectPlayer2 = false;
+    int diceThree = 0;
+    int diceFour = 0;
+
+    private bool _isChatting = false;
+
+    private string _message;
+
+    private string _newMessage;
+
+    private List<Message> _messages = new List<Message>();
+
+    private class Message
+    {
+        public Message(string username, string body, bool mine)
+        {
+            Username = username;
+            Body = body;
+            Mine = mine;
+        }
+
+        public string Username { get; set; }
+        public string Body { get; set; }
+        public bool Mine { get; set; }
+
+        public bool IsNotice => Body.StartsWith("[Notice]");
+
+        public string CSS => Mine ? "sent" : "received";
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        connection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:5002/dicehub")
+            .Build();
+
+        connection.On<string>("GetConnectionId", this.OnGetConnectionId);
+        connection.On<string, string>("FetchUser", this.OnFetchUser);
+        connection.On<string, int, int>("GetDice", this.OnGetDice);
+        connection.On<string, string>("Broadcast", this.BroadcastMessage);
+        await connection.StartAsync();
+    }
+
+    private void BroadcastMessage(string name, string message)
+    {
+        bool isMine = name.Equals(userName, StringComparison.OrdinalIgnoreCase);
+
+        _messages.Add(new Message(name, message, isMine));
+        StateHasChanged();
+
+    }
+
+    private async Task DisconnectAsync()
+    {
+        if (_isChatting)
+        {
+            await SendAsync($"[Notice] {userName} left chat room.");
+
+            await connection.StopAsync();
+            await connection.DisposeAsync();
+
+            connection = null;
+            _isChatting = false;
+        }
+    }
+
+    private async Task SendAsync(string message)
+    {
+        if (_isChatting && !string.IsNullOrWhiteSpace(message))
+        {
+            await connection.InvokeAsync("Broadcast", userName, message);
+
+            _newMessage = string.Empty;
+            
+        }
+    }
+
+    Task OnGetConnectionId(string _connectionID)
+    {
+        Console.WriteLine("ConnectionID:" + _connectionID);
+        connectionID = _connectionID;
+        return Task.CompletedTask;
+    }
+
+    async Task AddList()
+    {
+        bool result = await connection.InvokeAsync<bool>("AddList", userName, connectionID);
+        _isChatting = true;
+        Console.WriteLine("User Add Result:" + result);
+        if (result)
+        {
+            isConnect = true;
+        }
+
+    }
+
+    async Task SenDice()
+    {
+        await connection.InvokeAsync("SenDice", connectionID2, userName, diceOne, diceTwo);
+        await CalculateResult();
+        Console.WriteLine("Dice Send");
+    }
+
+    Task OnFetchUser(string userName, string connectionID)
+    {
+        Console.WriteLine("Player2 Name:" + userName);
+        Console.WriteLine("Player2 ConnectionID:" + connectionID);
+        connectionID2 = connectionID;
+        userName2 = userName;
+        isConnectPlayer2 = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    async Task OnGetDice(string userName, int _diceOne, int _diceTwo)
+    {
+        diceThree = _diceOne;
+        diceFour = _diceTwo;
+
+        if (diceOne != 0 && diceTwo != 0 && diceThree != 0 && diceFour != 0)
+        {
+            isplayAgain = true;
+        }
+
+        StateHasChanged();
+
+        await CalculateResult();
+    }
+
+    async Task CalculateResult()
+    {
+        if (diceOne != 0 && diceTwo != 0 && diceThree != 0 && diceFour != 0)
+        {
+            if ((diceOne + diceTwo) > (diceThree + diceFour))
+            {
+                Console.WriteLine("Winner:" + userName);
+                await ShowAlert("Kazanan :" + userName);
+            }
+            else
+            {
+                Console.WriteLine("Winner:" + userName2);
+                await ShowAlert("Kazanan :" + userName2);
+            }
+        }
+    }
+
+    int diceOne = 0;
+    int diceTwo = 0;
+    async Task PlayDice()
+    {
+        Random rnd = new Random();
+        diceOne = rnd.Next(1, 7);
+        System.Threading.Thread.Sleep(1000);
+        diceTwo = rnd.Next(1, 7);
+        StateHasChanged();
+        Console.WriteLine("Dice 1:" + diceOne);
+        Console.WriteLine("Dice 2:" + diceTwo);
+
+        if (diceOne != 0 && diceTwo != 0 && diceThree != 0 && diceFour != 0)
+        {
+            isplayAgain = true;
+        }
+
+        await SenDice();
+    }
+
+    void PlayAgain()
+    {
+        isplayAgain = false;
+        diceOne = 0;
+        diceTwo = 0;
+        diceThree = 0;
+        diceFour = 0;
+        StateHasChanged();
+    }
+
+    private async Task ShowAlert(string message)
+    {
+        var result = await jsRuntime.InvokeAsync<object>("alert", message);
+    }
+}

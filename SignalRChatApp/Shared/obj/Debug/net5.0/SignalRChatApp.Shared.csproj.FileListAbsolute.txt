@@ -1,0 +1,12 @@
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\bin\Debug\net5.0\SignalRChatApp.Shared.deps.json
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\bin\Debug\net5.0\SignalRChatApp.Shared.dll
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\bin\Debug\net5.0\SignalRChatApp.Shared.pdb
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\obj\Debug\net5.0\SignalRChatApp.Shared.csproj.AssemblyReference.cache
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\obj\Debug\net5.0\SignalRChatApp.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\obj\Debug\net5.0\SignalRChatApp.Shared.AssemblyInfoInputs.cache
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\obj\Debug\net5.0\SignalRChatApp.Shared.AssemblyInfo.cs
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\obj\Debug\net5.0\SignalRChatApp.Shared.csproj.CoreCompileInputs.cache
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\obj\Debug\net5.0\SignalRChatApp.Shared.dll
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\obj\Debug\net5.0\refint\SignalRChatApp.Shared.dll
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\obj\Debug\net5.0\SignalRChatApp.Shared.pdb
+C:\Users\07018332\Desktop\SignalRExample\SignalRChatApp\Shared\obj\Debug\net5.0\ref\SignalRChatApp.Shared.dll

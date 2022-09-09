@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "NEPdwCGqUniI2hO8Wb3hJ8kv8CHVwhkK0ru6xm6+xe+7K7ccSyVFOhTJRo+S6C++n5dKJ6hs/9UYxbPqxxmcbA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\07018332\\Desktop\\SignalRExample\\SignalRExample\\SignalRExample.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\07018332\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.15\\microsoft.netcore.app.host.win-x64.5.0.15.nupkg.sha512"
+  ],
+  "logs": []
+}
